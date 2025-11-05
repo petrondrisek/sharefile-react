@@ -1,13 +1,10 @@
-import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
-
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
+export function meta() {
+    return [
+        { title: "Sharefile" },
+        { name: "description", content: "Home" },
+    ];
 }
 
 export default function Home() {
-  return <Welcome />;
+    throw new Response("Not Found", { status: 404 });
 }
