@@ -39,6 +39,8 @@ export async function loader({ params }: Route.LoaderArgs) {
 export default function Detail({ loaderData }: Route.ComponentProps) {
   if (!loaderData) return <p>Loading…</p>;
 
+  const uuid = loaderData.data.uuid;
+
   const parseDateRemaining = (date: string) => {
     const now = new Date();
     const diff = new Date(date).getTime() - now.getTime();
@@ -73,13 +75,13 @@ export default function Detail({ loaderData }: Route.ComponentProps) {
     
       {loaderData.data.files.map((file) => (
         <div key={file.id} className="mt-2 grid grid-cols-3 md:grid-cols-4 gap-2 items-center bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded p-4">
-          <img src={import.meta.env.VITE_API_URL + `/public/${file.filename}`} className="max-h-[64px]" alt={file.filename} />
+          <img src={import.meta.env.VITE_API_URL + `/files/show/${uuid}/${file.filename}`} className="max-h-[64px]" alt={file.filename} />
           <p className="col-span-2 text-sm break-all w-full">{file.filename}</p>
           <div className="text-gray-500 col-span-3 text-sm flex items-end justify-between md:col-span-1 md:block">
             <p>Zbývá: {parseDateRemaining(file.validUntil)}</p>
             <button
               type="button" 
-              onClick={ () => handleDownload(import.meta.env.VITE_API_URL + `/public/${file.filename}`, file.filename) }
+              onClick={ () => handleDownload(import.meta.env.VITE_API_URL + `/files/show/${uuid}/${file.filename}`, file.filename) }
               className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
             >
                 Stáhnout
