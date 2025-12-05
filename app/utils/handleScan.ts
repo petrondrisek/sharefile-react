@@ -1,4 +1,9 @@
-import jsQR from "jsqr-es6";
+// import jsQR from "jsqr-es6"; not in SSR, just client.
+let jsQR: any;
+if (typeof window !== "undefined") {
+    const m = await import("jsqr-es6");
+    jsQR = m.default;
+}
 
 const handleScan = (
     canvas: HTMLCanvasElement, 
