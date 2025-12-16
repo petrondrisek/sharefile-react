@@ -69,7 +69,7 @@ export default function Detail({ loaderData }: Route.ComponentProps) {
   };
 
   return (
-    <div className="w-[600px] max-w-full min-h-screen p-8 mx-auto bg-gray-100 dark:bg-gray-800 overflow-x-hidden">
+    <div className="w-[600px] max-w-full min-h-screen min-h-[100dvh] p-8 mx-auto bg-gray-100 dark:bg-gray-800 overflow-x-hidden">
       <h1 className="text-3xl font-bold text-center">Sdílené soubory</h1>
       <p className="mt-4 text-gray-500 text-center mb-8">ID: {loaderData.data.uuid}</p>
     

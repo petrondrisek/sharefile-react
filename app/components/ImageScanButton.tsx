@@ -66,7 +66,8 @@ export default function ImageScanButton() {
                 onClick={handleClickUnselect}
                 className="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-500 dark:bg-gray-600 hover:bg-gray-700  dark:hover:bg-gray-700 focus:outline-none cursor-pointer"
                 >
-                    {selectedFile.name} &nbsp; &#10005;
+                    {selectedFile.name.length > 30 ? `${selectedFile.name.slice(0, 30)}...` : selectedFile.name} 
+                    &nbsp; &#10005;
                 </button>
             </>)
         }

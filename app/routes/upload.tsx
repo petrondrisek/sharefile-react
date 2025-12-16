@@ -16,7 +16,7 @@ export default function Upload() {
     const [files, setFiles] = useState<File[]>([]);
 
     return (
-        <div className="container flex w-full min-h-screen items-center justify-center mx-auto">
+        <div className="container flex w-full min-h-screen min-h-[100dvh] items-center justify-center mx-auto">
             <div className="w-[600px] max-w-full min-h-[200px] p-8 mx-auto overflow-x-hidden text-center">
                 <PageTitle>Upload</PageTitle>
                 <div className="flex items-center justify-center flex-col gap-4">

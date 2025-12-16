@@ -24,7 +24,7 @@ export default function Home() {
     }
 
     return (
-        <div className="container flex w-full min-h-screen items-center justify-center mx-auto">
+        <div className="container flex w-full min-h-screen min-h-[100dvh] items-center justify-center mx-auto">
             <div className="w-[600px] max-w-full min-h-[200px] p-8 mx-auto overflow-x-hidden">
                 <PageTitle>Sharefile</PageTitle>
                 
@@ -35,7 +35,7 @@ export default function Home() {
                         placeholder="Enter shareable link here or ID" 
                         className="w-full p-4 border border-gray-700 dark:border-gray-600 text-gray-500 focus:border-blue-500 focus:outline-none focus:text-black dark:focus:text-white rounded transition duration-200 ease-in-out" 
                     />
-                    <div className="flex items-center justify-center items-center">
+                    <div className="flex flex-wrap items-center justify-center items-center">
                         <button 
                             type="submit"
                             onClick={handleSubmit}
