@@ -45,8 +45,9 @@ export default function Detail({ loaderData }: Route.ComponentProps) {
     const now = new Date();
     const diff = new Date(date).getTime() - now.getTime();
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-    return `${hours} hodin`;
+    return `${hours} h ${minutes} min`;
   };
 
   const handleDownload = async (fileUrl: string, fileName: string) => {
