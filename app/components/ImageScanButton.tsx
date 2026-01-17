@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { processImageFile } from '../utils/processImageFile';
-import { clearCanvas } from '../utils/canvas';
-import { processQrCode } from '~/utils/processQrCode';
+import { usePhotoProcess } from '~/hooks/usePhotoProcess';
+import { validateInput } from '~/utils/validateInput';
 
 type IFile = File | undefined | null;
 
@@ -9,6 +8,22 @@ export default function ImageScanButton() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [selectedFile, setSelectedFile] = useState<IFile>(null);
+
+    const onSuccess = (data: string) => {
+        const id = data.split("/").pop();
+        window.location.href = `/detail/${id}`;
+    }
+
+    const onError = (message?: string) => {
+        alert(message || "An error occurred while processing the image.");
+    }
+
+    const { photoProcess } = usePhotoProcess(
+        canvasRef,
+        (data: string) => validateInput(data) !== "",
+        onSuccess,
+        onError
+    )
 
     const handleClick = () => {
         inputRef.current?.click();
@@ -19,27 +34,13 @@ export default function ImageScanButton() {
             inputRef.current.value = "";
         }
 
-        if (canvasRef.current) {
-            clearCanvas(canvasRef.current);
-        }
-
         setSelectedFile(null);
     }
 
     useEffect(() => {
         if (selectedFile && canvasRef.current) {
-            processImageFile(
-                selectedFile, 
-                canvasRef.current, 
-                (data: string) => {
-                    processQrCode(data);
-                }, 
-                (message?: string) => {
-                    alert(message || "Not found");
-                }
-            );
+            photoProcess(selectedFile);
         }
-
     }, [selectedFile]);
 
     return (<>

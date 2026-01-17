@@ -1,8 +1,7 @@
 import { useRef } from "react";
-import { processQrCode } from "~/utils/processQrCode";
+import { validateInput } from "~/utils/validateInput";
 import ImageScanButton from "~/components/ImageScanButton";
 import CameraScanButton from "~/components/CameraScanButton";
-import { Link } from "react-router";
 import PageTitle from "~/components/PageTitle";
 import RouteLink from "~/components/RouteLink";
 
@@ -20,7 +19,10 @@ export default function Home() {
         e.preventDefault();
         
         const inputValue = inputRef.current?.value.trim();
-        processQrCode(inputValue);
+        if(validateInput(inputValue)) {
+            const id = inputValue!.split("/").pop();
+            window.location.href = `/detail/${id}`;
+        }
     }
 
     return (

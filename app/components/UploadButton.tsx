@@ -28,30 +28,36 @@ export default function UploadButton({ files }: UploadButtonProps) {
         const formData = new FormData();
         files.forEach((file) => formData.append("files", file));
         
-        const res = await fetch(import.meta.env.VITE_API_URL + "/files", {
-            method: "POST",
-            body: formData,
-        });
+        try {
+            const res = await fetch(import.meta.env.VITE_API_URL + "/files", {
+                method: "POST",
+                body: formData,
+            });
 
-        if(!res.ok) {
+            if(!res.ok) {
+                setIsFetching(false);
+
+                const error = await res.json();
+                setError(error.message ?? "Failed to upload file.");
+                return;
+            }
+
+            const data: BackendResponse = await res.json();
+
+            if(!data) {
+                setIsFetching(false);
+                setError("Failed to upload file.");
+                return;
+            }
+
+            setError("");
+            setUuid(data.uuid);
             setIsFetching(false);
-
-            const error = await res.json();
-            setError(error.message ?? "Failed to upload file.");
-            return;
-        }
-
-        const data: BackendResponse = await res.json();
-
-        if(!data) {
+        } catch (err) {
+            console.error("Upload error:", err);
+            setError("Server is not ready to accept files right now, please try again later.");
             setIsFetching(false);
-            setError("Failed to upload file.");
-            return;
         }
-
-        setError("");
-        setUuid(data.uuid);
-        setIsFetching(false);
     };
 
     const createDataURL = () => {
