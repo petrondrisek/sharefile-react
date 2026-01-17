@@ -1,5 +1,8 @@
-import jsQR from "jsqr-es6";
-
+let jsQR: any;
+if (typeof window !== "undefined") {
+    const m = await import("jsqr-es6");
+    jsQR = m.default;
+}
 export function usePhotoProcess(
     canvasRef: React.RefObject<HTMLCanvasElement | null>,
     contentValidationFn: (data: string) => boolean,
@@ -18,7 +21,7 @@ export function usePhotoProcess(
 
             // Draw image to canvas to pass to jsQR
             ctx?.drawImage(bitmap, 0, 0, canvasRef.current.width, canvasRef.current.height);
-            
+
             const imageData = ctx?.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
             const qrCode = imageData ? jsQR(imageData.data, canvasRef.current.width, canvasRef.current.height) : null;
 

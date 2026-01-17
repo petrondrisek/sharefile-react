@@ -1,4 +1,9 @@
-import jsQR from "jsqr-es6";
+let jsQR: any;
+if (typeof window !== "undefined") {
+    const m = await import("jsqr-es6");
+    jsQR = m.default;
+}
+
 import { useRef, useState } from "react";
 
 export function useFrameProcess(
