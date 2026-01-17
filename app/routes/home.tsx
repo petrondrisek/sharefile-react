@@ -19,9 +19,12 @@ export default function Home() {
         e.preventDefault();
         
         const inputValue = inputRef.current?.value.trim();
-        if(validateInput(inputValue)) {
-            const id = inputValue!.split("/").pop();
+        const id = validateInput(inputValue);
+        if(id) {
             window.location.href = `/detail/${id}`;
+        } else {
+            console.log("Invalid URL data:", inputValue, "(ID: ", id, ")");
+            alert("Please enter a valid shareable link or ID.");
         }
     }
 

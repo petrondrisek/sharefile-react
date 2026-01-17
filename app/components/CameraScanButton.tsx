@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useCameraStream } from "~/hooks/useCameraStream";
 import { useFrameProcess } from "~/hooks/useFrameProccess";
@@ -8,9 +8,21 @@ import { validateInput } from "~/utils/validateInput";
 export default function CameraScanButton() {
     const navigate = useNavigate();
 
+    const [guide, setGuide] = useState<string | null>(null);
+    const isGuidVisible = useRef<boolean>(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     const [error, setError] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
 
     const onSuccess = (data: string) => {
         const id = data.split("/").pop();
@@ -28,6 +40,17 @@ export default function CameraScanButton() {
             return Boolean(id);
         } else {
             console.log("Invalid QR code data:", data);
+            
+            // Show guide only if not already visible
+            if(isGuidVisible.current === false) {
+                isGuidVisible.current = true;
+                setGuide(`QR code data is invalid. Please try again.`);
+
+                timeoutRef.current = setTimeout(() => {
+                    setGuide(null);
+                    isGuidVisible.current = false;
+                }, 3000);
+            }
             return false;
         }
     }
@@ -80,7 +103,13 @@ export default function CameraScanButton() {
 
     return (<>
         <div className={`fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-900 ${scanState === "scanning" ? "visible" : "hidden"}`}>
-            <div className="max-w-full w-[320px] max-h-screen h-[320px] bg-white dark:bg-gray-800">
+            <div className="relative max-w-full w-[320px] max-h-screen h-[320px] bg-white dark:bg-gray-800">
+                {guide && (
+                    <div className="max-w-full absolute bottom-[115%] left-0 right-0 translate-y-1/2 w-full h-full flex items-center justify-center pointer-events-none">
+                        <p className="bg-black bg-opacity-50 text-white p-2 rounded text-sm">{guide}</p>
+                    </div>
+                )}
+
                 <canvas ref={canvasRef} id="canvas_video" className="hidden"></canvas>
                 <video ref={videoRef} id="video" autoPlay playsInline muted></video>
 
