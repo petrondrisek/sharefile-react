@@ -1,7 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-
-
-type ScanState = 'idle' | 'scanning' | 'error';
+import { useEffect, useRef } from "react";
 
 export function useCameraStream(
     videoRef: React.RefObject<HTMLVideoElement | null>, 
@@ -12,14 +9,15 @@ export function useCameraStream(
     onSuccess: () => void,
     onError: (message?: string) => void,
 ) {
-    const [scanState, setScanState] = useState<ScanState>('idle');
     const streamRef = useRef<MediaStream | null>(null);
 
     const handleStartCamera = async () => {
-        if (!videoRef.current || !canvasRef.current) return;
+        if (!videoRef.current || !canvasRef.current) {
+            console.error("No video or canvas element found.");
+            return;
+        }
 
         try {
-            setScanState('scanning');
             let stream: MediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
             streamRef.current = stream;
 
@@ -32,7 +30,6 @@ export function useCameraStream(
         } catch (error) {
             console.error("Error accessing camera:", error);
             onError("Failed to access camera.");
-            setScanState('error');
         }
     }
     
@@ -50,7 +47,6 @@ export function useCameraStream(
         }
         
         reset();
-        setScanState('idle');
     }
 
     useEffect(() => {
@@ -60,5 +56,5 @@ export function useCameraStream(
         }
     }, []);
 
-    return { scanState, handleStartCamera, handleStopCamera };
+    return { handleStartCamera, handleStopCamera };
 }
