@@ -4,21 +4,19 @@ if (typeof window !== "undefined") {
     jsQR = m.default;
 }
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 export function useFrameProcess(
     videoRef: React.RefObject<HTMLVideoElement | null>, 
     canvasRef: React.RefObject<HTMLCanvasElement | null>,
     contentValidationFn: (data: string) => boolean,
     onSuccess: (data: string) => void,
+    onProcessingStart?: () => void
 ) {
     const frameCallbackIdRef = useRef<number | null>(null);
     const isProcessingRef = useRef(false);
 
-    const [isProcessing, setIsProcessing] = useState<Boolean>(false);
-
     const reset = () => {
-        setIsProcessing(false);
         isProcessingRef.current = false;
     }
 
@@ -42,13 +40,13 @@ export function useFrameProcess(
             const qrCode = imageData ? jsQR(imageData.data, canvasRef.current.width, canvasRef.current.height) : null;
 
             if (qrCode?.data) {
+                // Already processing, skip
                 if(isProcessingRef.current) {
-                    // Already processing, skip
                     return;
                 }
 
                 isProcessingRef.current = true;
-                setIsProcessing(true);
+                if(onProcessingStart) onProcessingStart();
 
                 // Validate QR code data outside of this hook, if not valid, start scanning again using onInvalidDataFn
                 if(contentValidationFn(qrCode.data)) {
@@ -57,7 +55,6 @@ export function useFrameProcess(
                 } else {
                     // Invalid data, reset processing state to allow further scans
                     isProcessingRef.current = false;
-                    setIsProcessing(false);
                 }
             } 
         }
@@ -79,5 +76,5 @@ export function useFrameProcess(
         }
     }
 
-    return { isProcessing, startFrameProcessing, stopFrameProcessing, reset };
+    return { startFrameProcessing, stopFrameProcessing, reset };
 }

@@ -7,7 +7,7 @@ interface QrCodeGenerateProps {
     children: React.ReactNode;
 }
 
-export default function QrCodeGenerate({ width, height, children }: QrCodeGenerateProps) {
+export const QrCode = ({ width, height, children }: QrCodeGenerateProps) => {
     const [src, setSrc] = useState<string>("");
 
     useEffect(() => {

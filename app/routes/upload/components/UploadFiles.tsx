@@ -1,65 +1,30 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import clsx from "clsx";
+import { useDragAndDrop } from "../hooks/useDragAndDrop";
 
 interface UploadFilesProps {
-  files: File[];
-  setFiles: React.Dispatch<React.SetStateAction<File[]>>;
+  addFile: (file: File) => void
 }
 
-export default function UploadFiles({ files, setFiles }: UploadFilesProps) {
-  const [isDragging, setIsDragging] = useState(false);
-
+export default function UploadFiles({ addFile }: UploadFilesProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const dragCounter = useRef(0);
 
-  const addFiles = (incoming: File[]) => {
-    setFiles((prev) => {
-      const existing = new Set(prev.map((f) => f.name));
-      const filtered = incoming.filter(
-        (file) =>
-          (file.type === "image/jpeg" || file.type === "image/png") && !existing.has(file.name)
-      );
-      return [...prev, ...filtered];
-    });
-  };
-
+  const { onDragEnter, onDragOver, onDragLeave, onDrop, isDragging } = useDragAndDrop({
+    onFileDrop: (file) => addFile(file),
+  });
+  
   const handleChooseFileClick = () => {
     inputRef.current?.click();
   };
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
-    addFiles(Array.from(e.target.files));
+    
+    const files = Array.from(e.target.files);
+    files.forEach((file) => addFile(file));
+
     e.target.value = "";
   };
-
-  const onDragEnter = (e: React.DragEvent) => {
-    e.preventDefault();
-    dragCounter.current++;
-    setIsDragging(true);
-  };
-
-  const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const onDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    dragCounter.current = Math.max(0, dragCounter.current - 1);
-
-    if (dragCounter.current === 0) {
-      setIsDragging(false);
-    }
-  };
-
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    dragCounter.current = 0;
-    setIsDragging(false);
-
-    addFiles(Array.from(e.dataTransfer.files));
-  };
-
 
   return (
     <>
@@ -123,25 +88,6 @@ export default function UploadFiles({ files, setFiles }: UploadFilesProps) {
             : "Click or drag an image to upload"}
         </p>
       </div>
-
-      {files.length > 0 && (
-        <ul className="mt-4 space-y-2 text-sm">
-          {files.map((file) => (
-            <li
-              key={file.name}
-              className="flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-500 dark:bg-gray-600 hover:bg-gray-700  dark:hover:bg-gray-700 focus:outline-none cursor-pointer"
-              onClick={() =>
-                setFiles((prev) =>
-                  prev.filter((f) => f.name !== file.name)
-                )
-              }
-            >
-              {file.name.length > 30 ? `${file.name.slice(0, 30)}...` : file.name}
-              &nbsp; &#10005;
-            </li>
-          ))}
-        </ul>
-      )}
     </>
   );
 }
