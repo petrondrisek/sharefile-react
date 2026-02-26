@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 interface Props {
     onFileDrop?: (file: File) => void
@@ -8,11 +8,15 @@ interface Props {
 
 export const useDragAndDrop = ({ onFileDrop, onElementDrop, onTextDrop }: Props) => {
     const dragCounterRef = useRef<number>(0);
-    const isDragging = dragCounterRef.current > 0;
+    const [isDragging, setIsDragging] = useState<boolean>(false);
 
     const onDragEnter = (e: React.DragEvent) => {
         e.preventDefault();
         dragCounterRef.current++;
+
+        if (dragCounterRef.current === 1) {
+            setIsDragging(true);
+        }
     }
 
     const onDragOver = (e: React.DragEvent) => {
@@ -22,12 +26,17 @@ export const useDragAndDrop = ({ onFileDrop, onElementDrop, onTextDrop }: Props)
     const onDragLeave = (e: React.DragEvent) => {
         e.preventDefault();
         dragCounterRef.current = Math.max(0, dragCounterRef.current - 1);
+
+        if (dragCounterRef.current === 0) {
+            setIsDragging(false);
+        }
     }
 
     const onDrop = (e: React.DragEvent) => {
         e.preventDefault();
         
         dragCounterRef.current = 0;
+        setIsDragging(false);
         
         const files = Array.from(e.dataTransfer.files);
 
